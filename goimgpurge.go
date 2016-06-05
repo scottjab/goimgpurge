@@ -7,6 +7,8 @@ import (
 	"strings"
 )
 
+var ErrNotImgur = errors.New("NotImgur")
+
 func IsImgur(url *url.URL) bool {
 	return strings.Contains(url.Host, "imgur.com")
 }
@@ -42,11 +44,11 @@ func GetImage(url *url.URL) *url.URL {
 func Purge(rawUrl string) (*url.URL, error) {
 	parsedUrl, err := url.Parse(rawUrl)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	if !IsImgur(parsedUrl) {
-		return nil, errors.New("Not imgur.")
+		return parsedUrl, ErrNotImgur
 	}
 
 	if IsAlbum(parsedUrl) {

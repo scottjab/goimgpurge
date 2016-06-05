@@ -74,3 +74,13 @@ func TestPurge(t *testing.T) {
 	assert.Equal(t, url.Path, "/Ci07j.gifv")
 
 }
+
+func TestPurgeNotImgur(t *testing.T) {
+	url, err := imgpurge.Purge("http://validurl.com/somekindofgif.jpg")
+	if err != nil {
+		if err == imgpurge.ErrNotImgur {
+			assert.Equal(t, url.String(), "http://validurl.com/somekindofgif.jpg")
+		}
+	}
+
+}
