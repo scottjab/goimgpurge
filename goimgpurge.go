@@ -13,12 +13,19 @@ func IsImgur(url *url.URL) bool {
 	return strings.Contains(url.Host, "imgur.com")
 }
 
-func IsAlbum(url *url.URL) bool {
-	found := strings.Contains("/a/", url.Path[:3])
-	if !found && len(url.Path) > 9 {
-		found = strings.Contains("/gallery/", url.Path[:9])
+func CleanMobileLink(url *url.URL) *url.URL {
+	if url.Host == "m.imgur.com" {
+		if IsAlbum(url) {
+			url.Host = "imgur.com"
+		} else {
+			url.Host = "i.imgur.com"
+		}
 	}
-	return found
+	return url
+}
+
+func IsAlbum(url *url.URL) bool {
+	return strings.Contains(url.Path, "/a/") || strings.Contains(url.Path, "/gallery")
 }
 
 func makeGifv(url *url.URL) *url.URL {

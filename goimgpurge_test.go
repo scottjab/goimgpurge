@@ -43,6 +43,25 @@ func TestIsImgur(t *testing.T) {
 		assert.True(t, imgpurge.IsImgur(url))
 	}
 }
+
+func TestCleanMobile(t *testing.T) {
+	mobileLink, _ := url.Parse("https://m.imgur.com/SyuKFYj.jpg")
+	mobileLink = imgpurge.CleanMobileLink(mobileLink)
+	assert.Equal(t, "i.imgur.com", mobileLink.Host)
+}
+
+func TestCleanMobileAlbum(t *testing.T) {
+	mobileAlbum, _ := url.Parse("https://m.imgur.com/a/arP2Otg")
+	mobileAlbum = imgpurge.CleanMobileLink(mobileAlbum)
+	assert.Equal(t, "imgur.com", mobileAlbum.Host)
+}
+
+func TestCleanMobileFallThough(t *testing.T) {
+	mobileLink, _ := url.Parse("https://m.catbot.io/image.jpg")
+	mobileLink = imgpurge.CleanMobileLink(mobileLink)
+	assert.Equal(t, "m.catbot.io", mobileLink.Host)
+}
+
 func TestPurge(t *testing.T) {
 	for _, image := range badImgs {
 		_, err := imgpurge.Purge(image)
@@ -51,27 +70,27 @@ func TestPurge(t *testing.T) {
 
 	// Test regular image
 	url, _ := imgpurge.Purge("http://imgur.com/SyuKFYj")
-	assert.Equal(t, url.Host, "i.imgur.com")
+	assert.Equal(t, "i.imgur.com", url.Host)
 	fmt.Println(url.Path)
-	assert.Equal(t, url.Path, "/SyuKFYj.jpg")
+	assert.Equal(t, "/SyuKFYj.jpg", url.Path)
 
 	// Test fall though jpg
 	url, _ = imgpurge.Purge("https://i.imgur.com/ycArzxR.jpg")
-	assert.Equal(t, url.Host, "i.imgur.com")
+	assert.Equal(t, "i.imgur.com", url.Host)
 	fmt.Println(url.Path)
-	assert.Equal(t, url.Path, "/ycArzxR.jpg")
+	assert.Equal(t, "/ycArzxR.jpg", url.Path)
 
 	// Test gifv
 	url, _ = imgpurge.Purge("http://i.imgur.com/EhO081n.gifv")
-	assert.Equal(t, url.Host, "i.imgur.com")
+	assert.Equal(t, "i.imgur.com", url.Host)
 	fmt.Println(url.Path)
-	assert.Equal(t, url.Path, "/EhO081n.gifv")
+	assert.Equal(t, "/EhO081n.gifv", url.Path)
 
 	// Test gif to gifv
 	url, _ = imgpurge.Purge("http://i.imgur.com/Ci07j.gif")
-	assert.Equal(t, url.Host, "i.imgur.com")
+	assert.Equal(t, "i.imgur.com", url.Host)
 	fmt.Println(url.Path)
-	assert.Equal(t, url.Path, "/Ci07j.gifv")
+	assert.Equal(t, "/Ci07j.gifv", url.Path)
 
 }
 
